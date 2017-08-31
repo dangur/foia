@@ -56,3 +56,8 @@ behat:
   web-driver: selenium
 vm:
   enable: true
+phpunit:
+  -
+    config: ${docroot}/core/phpunit.xml.dist
+    group: foia_personnel
+    path: ${docroot}/modules/custom/foia_migrate
