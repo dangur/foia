@@ -60,4 +60,4 @@ phpunit:
   -
     config: ${docroot}/core/phpunit.xml.dist
     group: foia_personnel
-    path: ${docroot}/modules/custom/foia_migrate
+    path: ${docroot}/modules/custom/foia_personnel
