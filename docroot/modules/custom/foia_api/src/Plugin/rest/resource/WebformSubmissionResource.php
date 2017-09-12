@@ -23,9 +23,11 @@ class WebformSubmissionResource extends ResourceBase {
   public function post(array $data) {
 
     $values = [
-      'webform_id' => 'basic_request_submission_form',
-      'data' => NULL,
+      'webform_id' => $data['webform_id'],
     ];
+
+    unset($data['webform_id']);
+    $values['data'] = $data;
 
     // Check webform is open.
     $webform = Webform::load($values['webform_id']);
