@@ -4,6 +4,7 @@ namespace Drupal\Tests\foia_api\Kernel;
 
 use Drupal\Tests\token\Kernel\KernelTestBase;
 use \GuzzleHttp;
+use \GuzzleHttp\Exception\RequestException;
 
 /**
  * Class WebformSubmissionResourceTest.
@@ -17,8 +18,7 @@ use \GuzzleHttp;
 class WebformSubmissionResourceTest extends KernelTestBase {
 
   public static $modules = ['foia_api'];
-
-  //private $http;
+  private $http;
 
   /**
    * @{inheritdoc}
@@ -28,7 +28,7 @@ class WebformSubmissionResourceTest extends KernelTestBase {
 
     $this->installConfig('system', 'foia_api');
 
-
+    // @todo get url from var.
     $host = 'http://local.dojfoia.gov';//\Drupal::request()->getSchemeAndHttpHost();
     $this->http = new GuzzleHttp\Client(['base_uri' => $host]);
   }
@@ -40,21 +40,25 @@ class WebformSubmissionResourceTest extends KernelTestBase {
    */
   public function testPost($id, $first_name, $last_name, $email, $request_description, $request_fee_waiver, $request_expedited_processing) {
 
-    $json = '{
-    "id": "' . $id . '"",
-    "first_name": "' . $first_name . '",
-    "last_name": "' . $last_name . '",
-    "email": "' . $email . '",
-    "request_description": "' . $request_description . '",
-    "request_fee_waiver": "' . $request_fee_waiver . '",
-    "request_expedited_processing": "' . $request_expedited_processing . '"
-    }';
+    $data = array(
+      'id' => $id,
+      'first_name' => $first_name,
+      'last_name' => $last_name,
+      'email' => $email,
+      'request_description' => $request_description,
+      'request_fee_waiver' => $request_fee_waiver,
+      'request_expedited_processing' => $request_expedited_processing
+    );
 
+    $json = GuzzleHttp\json_encode($data);
     print_r($json);
+    //$response = $this->http->request('POST', 'api/webform/submit');
+    $request = $this->http->post('api/webform/submit', ['json' => [$data]]);
+    $response = $request->send();
 
-    $response = $this->http->request('POST', 'api/webform/submit');
 
     $this->assertEquals(201, $response->getStatusCode());
+
   }
 
   /**
