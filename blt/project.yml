@@ -57,3 +57,9 @@ behat:
 vm:
   enable: true
 simplesamlphp: 'TRUE'
+phpunit:
+  -
+    config: ${repo.root}/tests/phpunit
+    path: ${docroot}/modules/custom/foia_api
+    class: WebformSubmissionResourceTest
+    file: tests/src/Functional/WebformSubmissionResourceTest.php

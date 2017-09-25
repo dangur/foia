@@ -128,3 +128,6 @@ atlassian-ide-plugin.xml
 
 # Drupal console
 console
+
+# Tests
+docroot/sites/simpletest
