@@ -114,7 +114,8 @@ class WebformSubmissionResource extends ResourceBase {
    */
   public function post(array $data) {
     $webformId = isset($data['id']) ? $data['id'] : '';
-
+    print_r('webformId');
+    print_r($webformId);
     if (!$webformId) {
       $statusCode = 400;
       $message = t("Missing form 'id'.");
