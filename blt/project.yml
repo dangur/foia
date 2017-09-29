@@ -60,6 +60,6 @@ simplesamlphp: 'TRUE'
 phpunit:
   -
     config: ${repo.root}/tests/phpunit/phpunit.xml
-    path: ${docroot}/modules/custom/webform_template
-    class: WebformTemplateControllerTest
-    file: tests/src/Kernel/WebformTemplateControllerTest.php
+    path: ${docroot}/modules/custom/foia_api
+    class: FoiaApiFunctionalTest
+    file: tests/src/Functional/FoiaApiFunctionalTest.php
