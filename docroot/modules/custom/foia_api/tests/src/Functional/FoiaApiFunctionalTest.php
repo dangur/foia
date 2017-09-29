@@ -25,6 +25,9 @@ use Drupal\Tests\jsonapi\Functional\JsonApiFunctionalTestBase;
 
 class FoiaApiFunctionalTest extends BrowserTestBase{
 
+  use EntityReferenceTestTrait;
+  use ImageFieldCreationTrait;
+
   public static $modules = [
     'basic_auth',
     'jsonapi',
@@ -54,6 +57,46 @@ class FoiaApiFunctionalTest extends BrowserTestBase{
     $this->httpClient = $this->container->get('http_client_factory')
       ->fromOptions(['base_uri' => $this->baseUrl]);
 
+    // Create node types
+    if ($this->profile != 'standard') {
+      $this->drupalCreateContentType([
+        'type' => 'agency_component',
+        'name' => 'Agency Component',
+      ]);
+    }
+
+    // Setup vocabulary
+    Vocabulary::create([
+      'vid' => 'agency',
+      'name' => 'Agency',
+    ])->save();
+
+    // Add Agency to Agency Component
+    $this->createEntityReferenceField(
+      'node',
+      'agency_component',
+      'field_agency',
+      'Agency',
+      'taxonomy_term',
+      'default',
+      [
+        'target_bundles' => [
+          'agency' => 'agency',
+        ],
+        'auto_create' => TRUE,
+      ],
+      FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED
+    );
+
+    // Add Portal Submission Format to Agency Component
+    FieldStorageConfig::create([
+      'field_name' => 'field_portal_submission_format',
+      'entity_type' => 'node',
+      'type' => 'list',
+      'settings' =>
+    ]);
+
+
     //$this->installConfig(['webform', 'webform_template']);
 
     // Gets template elements from module config.
@@ -67,6 +110,15 @@ class FoiaApiFunctionalTest extends BrowserTestBase{
     //$webformWithTemplate->set('foia_template', 1);
     //print_r($webformWithTemplate);
     $webformWithTemplate->save();
+
+    $term = Term::create([
+      'vid' => 'agency',
+      'name' => 'test',
+    ]);
+    $term->save();
+
+    $node = $this->drupalCreateNode($values);
+    $node->save();
 
     drupal_flush_all_caches();
 
@@ -143,5 +195,6 @@ print_r($elements);
     $webform->save();
   }
 
+  function foia_api_allowed_values_function()
 }
 
