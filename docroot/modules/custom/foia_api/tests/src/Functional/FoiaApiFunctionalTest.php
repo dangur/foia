@@ -28,7 +28,7 @@ class FoiaApiFunctionalTest extends BrowserTestBase{
   use EntityReferenceTestTrait;
   use ImageFieldCreationTrait;
 
-  public static $modules = [
+  protected static $modules = [
     'basic_auth',
     'jsonapi',
     'serialization',
@@ -88,14 +88,26 @@ class FoiaApiFunctionalTest extends BrowserTestBase{
       FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED
     );
 
-    // Add Portal Submission Format to Agency Component
-    FieldStorageConfig::create([
-      'field_name' => 'field_portal_submission_format',
-      'entity_type' => 'node',
-      'type' => 'list',
-      'settings' =>
-    ]);
+    // Add Request Submission Form to Agency Component
+    $this->createEntityReferenceField(
+      'node',
+      'agency_component',
+      'field_request_submission_form',
+      'Request Submission Form	',
+      'webform',
+      'default',
+      [
+        'target_bundles' => [
+          'basic_request_submission_form' => 'basic_request_submission_form',
+        ],
+      ],
+      FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED
+    );
 
+    $this->grantPermissions(Role::load(RoleInterface::ANONYMOUS_ID), [
+      'View published content',
+      'Access POST on Webform submission resource',
+    ]);
 
     //$this->installConfig(['webform', 'webform_template']);
 
