@@ -163,6 +163,26 @@ class FoiaSubmissionServiceApiTest extends KernelTestBase {
     $errorMessage = $this->submissionServiceApi->getSubmissionErrors();
     $this->assertEquals(404, $errorMessage['http_code']);
     $this->assertEquals($responseContents['message'], $errorMessage['message']);
+    $this->assertEquals($responseContents['description'], $errorMessage['description']);
+
+  }
+
+  /**
+   * Tests receiving a successful response from an agency component.
+   */
+  public function testSuccessResponseFromComponent() {
+    $responseContents = [
+      'id' => '33',
+      'status_tracking_number' => 'doj-1234',
+    ];
+    $this->setupHttpClientMock($responseContents, 200);
+    $this->submissionServiceApi = new FoiaSubmissionServiceApi($this->httpClient, $this->agencyLookupService, $this->logger);
+    $validSubmission = $this->submissionServiceApi->sendSubmissionToComponent($this->webformSubmission, $this->webform, $this->agencyComponent);
+    $errorMessage = $this->submissionServiceApi->getSubmissionErrors();
+    $this->assertEquals(200, $validSubmission['http_code']);
+    $this->assertEquals($responseContents['id'], $validSubmission['id']);
+    $this->assertEquals('api', $validSubmission['type']);
+    $this->assertArrayNotHasKey('message', $errorMessage);
 
   }
 
@@ -223,12 +243,25 @@ class FoiaSubmissionServiceApiTest extends KernelTestBase {
   }
 
   /**
-   * Sets up Guzzle mock.
+   * Sets up Guzzle error mock.
    */
   protected function setupHttpClientErrorMock(array $responseContents, $responseStatusCode) {
     $testAgencyErrorResponse = Json::encode($responseContents);
     $guzzleMock = new MockHandler([
       new RequestException("Error communicating with component", new Request('POST', 'test'), new Response($responseStatusCode, [], $testAgencyErrorResponse)),
+    ]);
+
+    $guzzleHandlerMock = HandlerStack::create($guzzleMock);
+    $this->httpClient = new Client(['handler' => $guzzleHandlerMock]);
+  }
+
+  /**
+   * Sets up Guzzle success mock.
+   */
+  protected function setupHttpClientMock(array $responseContents, $responseStatusCode) {
+    $testAgencyResponse = Json::encode($responseContents);
+    $guzzleMock = new MockHandler([
+      new Response($responseStatusCode, [], $testAgencyResponse),
     ]);
 
     $guzzleHandlerMock = HandlerStack::create($guzzleMock);
