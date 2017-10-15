@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\foia_request\Kernel;
 
+use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\foia_request\Entity\FoiaRequest;
-use Drupal\foia_request\Entity\FoiaRequestInterface;
 use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
 
 /**
@@ -11,13 +11,19 @@ use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
  *
  * @package Drupal\Tests\foia_request\Kernel
  */
-class FoiaRequestTest extends EntityKernelTestBase implements FoiaRequestInterface {
+class FoiaRequestTest extends EntityKernelTestBase {
+
+  public static $modules = ['foia_request', 'options'];
 
   /**
    * {@inheritdoc}
    */
   public function setUp() {
     parent::setUp();
+
+    $fieldStorageConfig = \Drupal::config('')
+
+    FieldStorageConfig::create([])->save();
 
   }
 
