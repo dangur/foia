@@ -3,6 +3,7 @@
 namespace Drupal\Tests\foia_request\Kernel;
 
 use Drupal\foia_request\Entity\FoiaRequest;
+use Drupal\foia_request\Entity\FoiaRequestInterface;
 use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
 
 /**
@@ -20,44 +21,48 @@ class FoiaRequestTest extends EntityKernelTestBase {
   public function setUp() {
     parent::setUp();
 
-    $this->installConfig('foia_request');
     $this->installEntitySchema('foia_request');
 
   }
 
   /**
-   * Tests FOIA Request creation.
+   * Tests FOIA Requests are created with appropriate defaults.
    */
   public function testFoiaRequest() {
-
-    $foiaRequest = FoiaRequest::create([
-      'field_agency_component' => 1,
-      'field_case_management_id' => '1',
-      'field_error_code' => '1',
-      'field_error_message' => 'error message',
-      'field_http_code' => 200,
-      'field_requester_email' => 'requester@example.com',
-      'field_submission_method' => 'api',
-      'field_submission_time' => 1508432427,
-      'field_tracking_number' => '1',
-      'field_webform_submission_id' => 1,
-    ]);
-print_r($foiaRequest->getSubmissionMethod());
-
+    $foiaRequest = FoiaRequest::create();
 
     $this->assertEquals('foia_request', $foiaRequest->getEntityTypeId());
-
-    $foiaEntity = \Drupal::entityTypeManager()
-      ->getStorage('foia_request')
-      ->loadByProperties(['field_case_management_id' => '1']);
-    print_r($foiaEntity);
-
-    /*$query = \Drupal::entityQuery('foia_request')->execute();
-    print_r($query);*/
-
-    //print_r($foiaRequest->get('field_agency_component')->getValue());
-    //print_r($time);
+    $this->assertEquals(FoiaRequestInterface::STATUS_QUEUED, $foiaRequest->getRequestStatus());
+    $this->assertNotEmpty($foiaRequest->get('created')->value);
 
   }
+
+  /**
+   *
+   */
+  public function testSetRequestStatus() {
+    $foiaRequest = FoiaRequest::create();
+
+    $foiaRequest->setRequestStatus(5);
+    $this->assertEquals(FoiaRequestInterface::STATUS_QUEUED, $foiaRequest->getRequestStatus());
+
+    $foiaRequest->setRequestStatus(FoiaRequestInterface::STATUS_SUBMITTED);
+    $this->assertEquals(FoiaRequestInterface::STATUS_SUBMITTED, $foiaRequest->getRequestStatus());
+  }
+
+  /**
+   *
+   */
+  public function testSetSubmissionMethod() {
+    $foiaRequest = FoiaRequest::create();
+
+    $foiaRequest->setSubmissionMethod(5);
+    $this->assertEquals(FoiaRequestInterface::METHOD_EMAIL, $foiaRequest->getSubmissionMethod());
+
+    $foiaRequest->setSubmissionMethod(FoiaRequestInterface::METHOD_API);
+    $this->assertEquals(FoiaRequestInterface::METHOD_API, $foiaRequest->getSubmissionMethod());
+
+  }
+
 
 }
