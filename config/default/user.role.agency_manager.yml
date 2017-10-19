@@ -16,5 +16,4 @@ permissions:
   - 'delete foia personnel entities'
   - 'edit foia personnel entities'
   - 'use text format rich_text'
-  - 'view published foia request entities'
   - 'view the administration theme'
