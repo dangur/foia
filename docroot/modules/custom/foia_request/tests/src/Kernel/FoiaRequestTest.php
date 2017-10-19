@@ -20,7 +20,7 @@ class FoiaRequestTest extends EntityKernelTestBase {
   public function setUp() {
     parent::setUp();
 
-    $this->installConfig('foia_request');
+   // $this->installConfig('foia_request');
     $this->installEntitySchema('foia_request');
 
   }
@@ -41,16 +41,17 @@ class FoiaRequestTest extends EntityKernelTestBase {
       'field_submission_time' => 1508432427,
       'field_tracking_number' => '1',
       'field_webform_submission_id' => 1,
+      'request_status' => 0,
     ]);
-print_r($foiaRequest->getSubmissionMethod());
+//print_r($foiaRequest->getSubmissionMethod());
 
 
     $this->assertEquals('foia_request', $foiaRequest->getEntityTypeId());
 
-    $foiaEntity = \Drupal::entityTypeManager()
+    /*$foiaEntity = \Drupal::entityTypeManager()
       ->getStorage('foia_request')
       ->loadByProperties(['field_case_management_id' => '1']);
-    print_r($foiaEntity);
+    print_r($foiaEntity);*/
 
     /*$query = \Drupal::entityQuery('foia_request')->execute();
     print_r($query);*/
