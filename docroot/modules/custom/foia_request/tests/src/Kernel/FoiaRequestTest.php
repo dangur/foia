@@ -2,6 +2,8 @@
 
 namespace Drupal\Tests\foia_request\Kernel;
 
+use Drupal\field\Entity\FieldConfig;
+use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\foia_request\Entity\FoiaRequest;
 use Drupal\foia_request\Entity\FoiaRequestInterface;
 use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
@@ -13,7 +15,7 @@ use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
  */
 class FoiaRequestTest extends EntityKernelTestBase {
 
-  public static $modules = ['foia_request', 'options'];
+  public static $modules = ['foia_request', 'options', 'field_permissions'];
 
   /**
    * {@inheritdoc}
@@ -21,7 +23,15 @@ class FoiaRequestTest extends EntityKernelTestBase {
   public function setUp() {
     parent::setUp();
 
+    $this->installConfig('system');
     $this->installEntitySchema('foia_request');
+
+    $path = DRUPAL_ROOT . '/' . drupal_get_path('module', 'foia_request') . '/config/install/';
+    $yml = yaml_parse(file_get_contents($path . 'field.storage.foia_request.field_submission_method.yml'));
+    FieldStorageConfig::create($yml)->save();
+    $yml = yaml_parse(file_get_contents($path . 'field.field.foia_request.foia_request.field_submission_method.yml'));
+    print_r($yml);
+    FieldConfig::create($yml)->save();
 
   }
 
@@ -38,7 +48,7 @@ class FoiaRequestTest extends EntityKernelTestBase {
   }
 
   /**
-   *
+   * Tests that invalid request status becomes default and submitted passes.
    */
   public function testSetRequestStatus() {
     $foiaRequest = FoiaRequest::create();
@@ -51,18 +61,31 @@ class FoiaRequestTest extends EntityKernelTestBase {
   }
 
   /**
-   *
+   * Tests that invalid submission method defaults to email & api method passes.
    */
   public function testSetSubmissionMethod() {
-    $foiaRequest = FoiaRequest::create();
 
-    $foiaRequest->setSubmissionMethod(5);
-    $this->assertEquals(FoiaRequestInterface::METHOD_EMAIL, $foiaRequest->getSubmissionMethod());
+    $path = DRUPAL_ROOT . '/' . drupal_get_path('module', 'foia_request') . '/config/install/';
+    $yml = yaml_parse(file_get_contents($path . 'field.storage.foia_request.field_http_code.yml'));
+    FieldStorageConfig::create($yml)->save();
+    $yml = yaml_parse(file_get_contents($path . 'field.field.foia_request.foia_request.field_http_code.yml'));
+    FieldConfig::create($yml)->save();
 
-    $foiaRequest->setSubmissionMethod(FoiaRequestInterface::METHOD_API);
-    $this->assertEquals(FoiaRequestInterface::METHOD_API, $foiaRequest->getSubmissionMethod());
+    FoiaRequest::create(['field_http_code' => 418])->save();
+
+    // Get the request.
+    $query = \Drupal::entityQuery('foia_request')
+      ->condition('field_http_code', 418);
+    $foiaRequestArray = $query->execute();
+
+    $foiaRequestEntity = FoiaRequest::load(current($foiaRequestArray));
+
+    $foiaRequestEntity->setSubmissionMethod(5);
+    $this->assertEquals(FoiaRequestInterface::METHOD_EMAIL, $foiaRequestEntity->getSubmissionMethod());
+
+    $foiaRequestEntity->setSubmissionMethod(FoiaRequestInterface::METHOD_API);
+    $this->assertEquals(FoiaRequestInterface::METHOD_API, $foiaRequestEntity->getSubmissionMethod());
 
   }
-
 
 }
