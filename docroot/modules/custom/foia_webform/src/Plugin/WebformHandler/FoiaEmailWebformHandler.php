@@ -70,8 +70,11 @@ class FoiaEmailWebformHandler extends EmailWebformHandler {
     // Get form submission contents.
     $submissionContents = $webformSubmission->getData();
 
+    // Get confirmation id.
+    $confirmationId = $webformSubmission->id();
+
     // Format the submission values as an HTML table.
-    $submissionContentsAsTable = $this->formatSubmissionContentsAsTable($foiaRequestId, $submissionContents);
+    $submissionContentsAsTable = $this->formatSubmissionContentsAsTable($foiaRequestId, $confirmationId, $submissionContents);
     $message['body'] = $submissionContentsAsTable;
 
     // Update the destination email address to the component's email address.
@@ -148,9 +151,9 @@ class FoiaEmailWebformHandler extends EmailWebformHandler {
    * @return string
    *   Returns the submission contents as an HTML table.
    */
-  public function formatSubmissionContentsAsTable($foiaRequestId, array $submissionContents) {
-    $tableHeaders = array_merge(['request_id'], array_keys($submissionContents));
-    $tableRows = array_merge(['request_id' => $foiaRequestId], $submissionContents);
+  public function formatSubmissionContentsAsTable($foiaRequestId, $confirmationId, array $submissionContents) {
+    $tableHeaders = array_merge(['request_id'], ['confirmation_id'], array_keys($submissionContents));
+    $tableRows = array_merge(['request_id' => $foiaRequestId], ['confirmation_id' => $confirmationId], $submissionContents);
     $table = [
       '#markup' => t('Hello,') . '<br>' . t('A new FOIA request was submitted to your agency component:') . '<br><br>',
     ];
