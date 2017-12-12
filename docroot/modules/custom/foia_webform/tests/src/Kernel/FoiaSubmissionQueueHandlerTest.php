@@ -150,10 +150,7 @@ class FoiaSubmissionServiceQueueHandlerTest extends KernelTestBase {
    */
   public function testFoiaRequestAttachmentPendingScan() {
 
-    $webform = Webform::create([
-      'id' => 'a_test_webform',
-    ]);
-
+    $webform = $this->webform;
     $config = \Drupal::config('webform_template.settings')->get('webform_template_elements');
     $templateElements = yaml_parse($config);
     $webform->setElements($templateElements);
