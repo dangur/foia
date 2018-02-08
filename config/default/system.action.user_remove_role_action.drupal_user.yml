@@ -1,0 +1,14 @@
+uuid: 9e43e7bf-900f-4292-a701-668cb98ee863
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.drupal_user
+  module:
+    - user
+id: user_remove_role_action.drupal_user
+label: 'Remove the Drupal user role from the selected user(s)'
+type: user
+plugin: user_remove_role_action
+configuration:
+  rid: drupal_user
