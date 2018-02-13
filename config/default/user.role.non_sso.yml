@@ -7,7 +7,7 @@ dependencies:
 third_party_settings:
   lightning_core:
     description: ''
-id: drupal_user
+id: non_sso
 label: Non-SSO
 weight: 12
 is_admin: null
