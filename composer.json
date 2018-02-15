@@ -86,7 +86,8 @@
                 "SessionCacheContext calls getId() on null": "https://www.drupal.org/files/issues/2881348-52.patch"
             },
             "drupal/password_policy": {
-                "Password policy config install issues": "https://www.drupal.org/files/issues/password-policy-config-import-field-error-2771129-49-D8.patch"
+                "Password policy config install issues": "https://www.drupal.org/files/issues/password-policy-config-import-field-error-2771129-49-D8.patch",
+                "Password expires (Password Reset Days) does not work": "https://www.drupal.org/files/issues/password_policy-password-expire-does-not-work-2860671-19.patch"
             }
         },
         "installer-types": [
